@@ -305,11 +305,22 @@ if __name__ =="__main__":
     y_test_prob = forest_clf_final.predict_proba(X_test_scaled)[:, 1]
     y_test_clf_predictions = (y_test_prob >= 0.3).astype(int)
 
+    # Baseline test, Does model predict more than just grid position?
+    grid = test_set["GridPosition"]
+
+    baseline_podium = (grid <= 3).astype(int)
+
     print("\nClassifier (RandomForestClassifier, balanced, threshold=0.3)")
     print("Confusion Matrix:\n", confusion_matrix(y_test_classifier, y_test_clf_predictions))
     print("F1 Score:", f1_score(y_test_classifier, y_test_clf_predictions))
     print("Precision:", precision_score(y_test_classifier, y_test_clf_predictions))
     print("Recall:", recall_score(y_test_classifier, y_test_clf_predictions))
+    print("\nBaseline regressor (finish = grid position)")
+    print("Test RMSE:", root_mean_squared_error(y_test_regressor, grid))
+    print("\nBaseline classifier (podium = started top 3)")
+    print("F1:", f1_score(y_test_classifier, baseline_podium))
+    print("Precision:", precision_score(y_test_classifier, baseline_podium))
+    print("Recall:", recall_score(y_test_classifier, baseline_podium))
     print("\n================================================================")
 
     plt.show()
