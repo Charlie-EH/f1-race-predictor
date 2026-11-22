@@ -9,6 +9,19 @@ Using race and qualifying data from [FastF1](https://github.com/theOehrly/Fast-F
 
 Trained on the 2022–2024 seasons and tested on 2025.
 
+## Results (2025 season, held out)
+
+| Task | Naive baseline | Model |
+|---|---|---|
+| Finishing position, RMSE (positions) | 4.81 (finish = grid position) | **4.28** (LinearRegression) |
+| Podium, F1 | **0.75** (podium = started top 3) | 0.66 (RandomForest, balanced, threshold 0.3) |
+| Podium, precision / recall | 0.75 / 0.75 | 0.59 / 0.75 |
+
+The regressor beats the "finish where you started" baseline by about half a position per driver.
+The podium classifier does not beat its baseline: both catch the same 54 of 72 podiums, but the
+model makes 19 extra false positives. In this data, qualifying position carries almost all of the
+podium signal.
+
 ## Plots
 
 **Precision and recall vs threshold (SGD)**
