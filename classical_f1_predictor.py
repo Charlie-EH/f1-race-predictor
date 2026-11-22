@@ -1,4 +1,4 @@
-co# standard library
+# standard library
 import subprocess
 from pathlib import Path
 
@@ -26,8 +26,8 @@ from extract_enrich import print_to_excel
 # ------------------------- constants --------------------------------
 
 # load in enriched dataset
-CSV_PATH = "/home/edward_c_holder/ml/ml_proj_2/data/output.csv"
-ENRICHED_DATA_PATH = "/home/edward_c_holder/ml/ml_proj_2/data/full_dataset_enriched.csv"
+CSV_PATH = "/home/edward_c_holder/ml/Geron_Part_1/ml_proj_2/data/output.csv"
+ENRICHED_DATA_PATH = "/home/edward_c_holder/ml/Geron_Part_1/ml_proj_2/data/full_dataset_enriched.csv"
 
 # -------------------------functions----------------------------------- 
 
@@ -112,13 +112,14 @@ if __name__ =="__main__":
 
     # note the following steps could be done using pipeline but, since this is a learning exercise I cose to explicate first
     # transform data from test set too!
-    X_train_imputed = pd.DataFrame(imputer.transform(X_train),columns=X_train.columns)
-    X_test_imputed = pd.DataFrame(imputer.transform(X_test),columns=X_test.columns)
+    X_train_imputed = pd.DataFrame(imputer.transform(X_train), columns=X_train.columns, index=X_train.index)
+    X_test_imputed  = pd.DataFrame(imputer.transform(X_test),  columns=X_test.columns,  index=X_test.index)
+
 
     # scale parameters, ml models cant handle big varience in dimensions
     std_scaler = StandardScaler()
-    X_train_scaled = pd.DataFrame(std_scaler.fit_transform(X_train_imputed),columns=X_train.columns)
-    X_test_scaled = pd.DataFrame(std_scaler.transform(X_test_imputed),columns=X_test.columns)
+    X_train_scaled = pd.DataFrame(std_scaler.fit_transform(X_train_imputed),columns=X_train.columns,index=X_train.index)
+    X_test_scaled = pd.DataFrame(std_scaler.transform(X_test_imputed),columns=X_test.columns,index=X_test.index)
 
     # ------------------ regression modelling ---------------------------
 
@@ -133,7 +134,7 @@ if __name__ =="__main__":
     # check performance on first 5 rows
     print("for five random instances:")
     print("\nLinearRegression predictions:\n\n",f1_lin_reg_predicts[sample_indices])
-    print("\nLinearRegression lables:\n\n",y_train_regressor[sample_indices])
+    print("\nLinearRegression lables:\n\n",y_train_regressor.iloc[sample_indices])
 
     # calculate rmse for liner regression
     lin_reg_rmse = root_mean_squared_error(y_train_regressor,f1_lin_reg_predicts)
@@ -232,14 +233,22 @@ if __name__ =="__main__":
     # square brakets cut off artifact created by sklearn and make all arrays the same size
     y_sgd_scores = cross_val_predict(sgd_clf,X_train_scaled,y_train_classifier,cv=3,method="decision_function",n_jobs=-1)
     precisions_sgd,recalls_sgd,thresholds_sgd = precision_recall_curve(y_train_classifier,y_sgd_scores)
+    plt.figure()
     plt.plot(thresholds_sgd,precisions_sgd[:-1],"b--",label="Precision",linewidth=2)
     plt.plot(thresholds_sgd,recalls_sgd[:-1],"g-",label="Recall",linewidth=2)
+    plt.xlabel("Decision threshold")
+    plt.ylabel("Score")
+    plt.legend()
     plt.savefig("./data/precision_recall_sgd.png")
     # steep drop off at threshold indicative of poor metric as a result of the skewed dataset
 
     # ROC also a common metric, but again, not useful with highly skewed data
     fpr,tpr,thresholds = roc_curve(y_train_classifier,y_sgd_scores)
+    plt.figure()
     plt.plot(fpr,tpr,linewidth=2,label="ROC")
+    plt.xlabel("False positive rate")
+    plt.ylabel("True positive rate (recall)")
+    plt.legend()
     plt.savefig("./data/roc_sgd.png")
     
     # checking area under curve for Reciever operating characteristic a good alternative but
@@ -257,9 +266,13 @@ if __name__ =="__main__":
     precisions_forest,recalls_forest,thresholds_forest = precision_recall_curve(
         y_train_classifier,y_score_forest
     )
+    plt.figure()
     plt.plot(recalls_forest,precisions_forest,"b-",linewidth=2,label="RandomForest")
     plt.plot(recalls_sgd,precisions_sgd,"--",linewidth=2,label="SGD")
-    plt.savefig("./data/roc_sgd.png")
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.legend()
+    plt.savefig("./data/precision_recall_rf_vs_sgd.png")
     print("\nRandomForestClassifier roc/auc score:\n\n",roc_auc_score(y_train_classifier,y_score_forest))
 
     cm_forest = confusion_matrix(y_train_classifier,y_pred_custom)
@@ -298,3 +311,5 @@ if __name__ =="__main__":
     print("Precision:", precision_score(y_test_classifier, y_test_clf_predictions))
     print("Recall:", recall_score(y_test_classifier, y_test_clf_predictions))
     print("\n================================================================")
+
+    plt.show()

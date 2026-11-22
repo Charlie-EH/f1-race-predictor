@@ -42,7 +42,7 @@ if __name__ == "__main__":
     f1.Cache.enable_cache("./f1_cache")
 
     #location for excel path
-    csv_path = "/home/edward_c_holder/ml/ml_proj_2/data/output.csv"
+    csv_path = "/home/edward_c_holder/ml/Geron_Part_1/ml_proj_2/data/output.csv"
 
     ############## change pandas options to show whole dataframe '####################
     pd.set_option('display.max_rows', None)
@@ -111,13 +111,13 @@ if __name__ == "__main__":
     full_dataset = full_dataset.sort_values(["Season", "Round"]).reset_index(drop=True)
 
     #save dataframe to csv so it doesn't have to be reloaded each time
-    full_dataset.to_csv("/home/edward_c_holder/ml/ml_proj_2/data/full_dataset_raw.csv")
+    full_dataset.to_csv("/home/edward_c_holder/ml/Geron_Part_1/ml_proj_2/data/full_dataset_raw.csv")
 
     ##############################################################################################
 
     #reload dataframe
 
-    full_dataset = pd.read_csv("/home/edward_c_holder/ml/ml_proj_2/data/full_dataset_raw.csv")
+    full_dataset = pd.read_csv("/home/edward_c_holder/ml/Geron_Part_1/ml_proj_2/data/full_dataset_raw.csv")
 
     #create a rolling race average column
 
@@ -169,9 +169,9 @@ if __name__ == "__main__":
 
     print(full_dataset.columns.tolist())
 
-    full_dataset.to_csv("/home/edward_c_holder/ml/ml_proj_2/data/full_dataset_enriched.csv")
+    full_dataset.to_csv("/home/edward_c_holder/ml/Geron_Part_1/ml_proj_2/data/full_dataset_enriched.csv")
 
-    full_dataset = pd.read_csv("/home/edward_c_holder/ml/ml_proj_2/data/full_dataset_enriched.csv")
+    full_dataset = pd.read_csv("/home/edward_c_holder/ml/Geron_Part_1/ml_proj_2/data/full_dataset_enriched.csv")
 
     print_to_excel(csv_path,full_dataset)
 
